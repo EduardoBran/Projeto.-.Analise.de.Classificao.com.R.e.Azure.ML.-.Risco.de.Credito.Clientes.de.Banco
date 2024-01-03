@@ -18,3 +18,11 @@ getwd()
 # - Procurar e arrastar o módulo "German Credit Card UCI dataset"
 
 
+## Convertendo as variáveis do tipo string para factor
+
+# - Procurar e arrastar o módulo "Edit Metadata"
+# - Conectar módulo "German Credit Card UCI dataset" em "Edit Metadata"
+
+# - Configurar o módulo "Edit Metadata" selecionando as colunas e na opção Categorical mudar para "Make Categorical"
+
+
