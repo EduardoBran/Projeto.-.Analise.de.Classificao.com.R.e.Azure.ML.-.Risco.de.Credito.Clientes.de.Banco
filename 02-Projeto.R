@@ -36,3 +36,12 @@ str(df)
 summary(df)
 
 
+## Alterando o nome das variáveis (pesquisado na fonte)
+
+names(df) <- c("CheckingAcctStat", "Duration", "CreditHistory", "Purpose", "CreditAmount", "SavingsBonds", "Employment",
+               "InstallmentRatePecnt", "SexAndStatus", "OtherDetorsGuarantors", "PresentResidenceTime", "Property", "Age",
+               "OtherInstallments", "Housing", "ExistingCreditsAtBank", "Job", "NumberDependents", "Telephone", "ForeignWorker", "CreditStatus")
+head(df)
+
+
+## 

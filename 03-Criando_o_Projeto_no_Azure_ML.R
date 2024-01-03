@@ -26,3 +26,12 @@ getwd()
 # - Configurar o módulo "Edit Metadata" selecionando as colunas e na opção Categorical mudar para "Make Categorical"
 
 
+## Alterando os nomes das variáveis
+
+# - Procurar e arrastar outro módulo "Edit Metadata"
+# - Conectar primeiro módulo do "Edit Metadata" neste
+
+# - Configurar o segundo módulo "Edit Metadata" selecionando todas as colunas (iremos mudar o nome de todas)
+# - Configurar o atributo "New column names" com os seguintes nomes:
+#   CheckingAcctStat, Duration, CreditHistory, Purpose, CreditAmount, SavingsBonds, Employment, InstallmentRatePecnt, SexAndStatus, OtherDetorsGuarantors, PresentResidenceTime, Property, Age, OtherInstallments, Housing, ExistingCreditsAtBank, Job, NumberDependents, Telephone, ForeignWorker, CreditStatus
+
