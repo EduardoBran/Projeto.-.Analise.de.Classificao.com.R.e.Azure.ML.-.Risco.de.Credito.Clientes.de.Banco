@@ -44,4 +44,28 @@ names(df) <- c("CheckingAcctStat", "Duration", "CreditHistory", "Purpose", "Cred
 head(df)
 
 
-## 
+
+## Análise Exploratória (Engenharia de Atributos em Variáveis Numéricas)
+
+# Calcular o número de valores únicos para cada variável
+unique_values <- lapply(df, function(x) length(unique(x)))
+
+# Exibir o número de valores únicos para cada variável
+for (i in seq_along(unique_values)) {
+  cat("Variável:", names(unique_values)[i], "\n")
+  cat("Unique Values:", unique_values[[i]], "\n\n")
+}
+
+# - Através do código acima podemos constatar que as variáveis "Duration", "CreditAmount" e "Age" possuem muitos valores únicos.
+
+# - E variáveis com uma grande quantidade de valores únicos podem apresentar problemas durante o trienamento de um Modelo de Classificação.
+# - O que fazer neste caso?
+#   Iremos converter essas três variáveis de Numéricas para Qualitativas (categóricas/factor)
+
+# - Iremos então criar e colocar os dados destas variáveis em 4 ou 5 categorias diferentes
+#   Exemplo: pegaremos a coluna "CreditAmount" que possui 921 valores únicos e colocaremos estes valores em categorias
+
+# - Isto não é obrigatório. O fato de aplicar este tipo de engenharia de atributos neste dataset não significa que devemos aplicar me outro
+
+
+
