@@ -53,3 +53,54 @@ getwd()
 # - Isto não é obrigatório. O fato de aplicar este tipo de engenharia de atributos neste dataset não significa que devemos aplicar me outro
 
 
+## Aplicando Engenharia de Atributos em Variáveis Numéricas
+
+# - Uma forma de fazer isso seria procurar e arrastar o módulo "Group Data into Bins"
+
+# - Mas iremos utilizar o módulo "Execute R Script". Procurar e arrastar os módulos "Execute R Script" e "ClassTools.zip"
+# - Conectar o último módulo "Edit Metadata" e o módulo "ClassTools.zip" no módulo "Execute R Scrpt"
+
+# - Colar no módulo "Execute R Script":
+
+## Carregando Pacotes
+library(dplyr)
+# Variável que controla a execução do script
+Azure <- TRUE
+
+if(Azure){
+  source("src/ClassTools.R")
+  Credit <- maml.mapInputPort(1)
+}else{
+  # R
+}
+
+# Forma 1 (Intervalar)
+# Criando 3 novas variáveis que foram transformadas de variáveis numéricas para variáveis categóricas com as funções de ClassTools.R 
+toFactors <- c("Duration", "CreditAmount", "Age")
+maxVals <- c(100, 1000000, 100)
+facNames <- unlist(lapply(toFactors, function(x) paste(x, "_f", sep = "")))
+Credit[, facNames] <- Map(function(x, y) quantize.num(Credit[, x], maxval = y), toFactors, maxVals)
+
+# Forma 2 (Discreta)
+# Criando 3 novas variáveis que foram transformadas de variáveis numéricas para variáveis categóricas aqui
+criar_categorias <- function(variavel, num_categorias) {
+  # Criar breakpoints para dividir a variável em categorias
+  breakpoints <- quantile(variavel, probs = seq(0, 1, length.out = num_categorias + 1))
+  
+  # Criar categorias
+  categorias <- cut(variavel, breaks = breakpoints, labels = seq(1, num_categorias), include.lowest = TRUE)
+  
+  return(categorias)
+}
+num_categorias <- 5
+Credit$Duration_Categoria <- criar_categorias(Credit$Duration, num_categorias)
+Credit$CreditAmount_Categoria <- criar_categorias(Credit$CreditAmount, num_categorias)
+Credit$Age_Categoria <- criar_categorias(Credit$Age, num_categorias)
+
+# Output 
+if(Azure) maml.mapOutputPort('Credit')
+
+
+
+
+
