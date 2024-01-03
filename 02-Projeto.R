@@ -5,21 +5,34 @@ setwd("~/Desktop/DataScience/CienciaDeDados/1.Big-Data-Analytics-com-R-e-Microso
 getwd()
 
 ## Carregando Pacotes
-
+library(dplyr)
 
 
 
 ## Carregando os dados
 
 # Carrega o dataset antes da transformacao (baixado do Azure ML)
-
 df <- read.csv("German_Credit_Card_UCI_-_dataset.csv")
-View(df)
+head(df)
+dim(df)
 
-## Alterando o nome das variáveis (pesquisado na fonte)
 
-# CheckingAcctStat, Duration, CreditHistory, Purpose, CreditAmount, SavingsBonds, Employment, InstallmentRatePecnt, SexAndStatus, 
-# OtherDetorsGuarantors, PresentResidenceTime, Property, Age, OtherInstallments, Housing, ExistingCreditsAtBank, Job, NumberDependents, 
-# Telephone, ForeignWorker, CreditStatus
+## Analisando os tipos das variáveis
+str(df)
+summary(df)
 
-# 
+# - Como constatamos na fonte dos dados, as variáveis do tipo character são do tipo factor, precisa então ser convertidas.
+
+
+## Convertendo as variáveis
+
+# Selecione apenas as variáveis do tipo caractere para conversão
+colunas_chr <- sapply(df, is.character)
+
+# Converta as variáveis do tipo caractere e a última variável para fatores 
+df <- mutate_if(df, colunas_chr, as.factor)
+df$X1.1 <- as.factor(df$X1.1)
+str(df)
+summary(df)
+
+
