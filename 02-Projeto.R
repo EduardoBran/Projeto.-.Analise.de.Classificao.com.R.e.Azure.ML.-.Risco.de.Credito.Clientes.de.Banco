@@ -159,4 +159,46 @@ summary(df2)
 
 
 
+#### Análise Exploratória dos Dados com Gráficos
+
+## Plots (ggplot2)
+
+# Exibindo diversos comparativos de bom pagador ou não dependendo da variável
+plots <- lapply(colNames2, function(x) {
+  if (x %in% names(df)) {
+    if (is.factor(df[[x]])) {
+      ggplot(df, aes(x = .data[[x]], fill = CreditStatus)) +
+        geom_bar() + 
+        facet_grid(. ~ CreditStatus) + 
+        ggtitle(paste("Total de Crédito Bom/Ruim por", x))
+    } else {
+      ggplot() +
+        ggtitle(paste("Coluna", x, "não é fator nem numérica. Não é possível criar gráfico."))
+    }
+  } else {
+    ggplot() +
+      ggtitle(paste("Coluna", x, "não existe no dataframe."))
+  }
+})
+print(plots)
+
+# Plots CreditStatus vs CheckingAcctStat
+plots_CreditStatus <- lapply(colNames2, function(x) {
+  if (is.factor(df[[x]]) && x != "CheckingAcctStat") {
+    ggplot(df, aes_string("CheckingAcctStat", fill = x)) +
+      geom_bar() + 
+      facet_grid(paste(x, " ~ CreditStatus")) + 
+      ggtitle(paste("Total de Crédito Bom/Ruim CheckingAcctStat e", x))
+  } else {
+    NULL
+  }
+})
+
+# Exibindo os gráficos
+print(plots_CreditStatus)
+
+
+
+
+
 
