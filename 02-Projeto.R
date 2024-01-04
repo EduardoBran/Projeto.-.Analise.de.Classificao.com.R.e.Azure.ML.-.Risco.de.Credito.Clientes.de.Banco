@@ -6,6 +6,8 @@ getwd()
 
 ## Carregando Pacotes
 library(dplyr)
+library(ggplot2)
+library(ROSE)
 
 
 
@@ -44,12 +46,12 @@ head(df)
 
 
 
-## Análise Exploratória para Engenharia de Atributos em Variáveis Numéricas
+#### Análise Exploratória para Engenharia de Atributos em Variáveis Numéricas
 
-# Calcular o número de valores únicos para cada variável
+## Calcular o número de valores únicos para cada variável
 unique_values <- lapply(df, function(x) length(unique(x)))
 
-# Exibir o número de valores únicos para cada variável
+## Exibir o número de valores únicos para cada variável
 for (i in seq_along(unique_values)) {
   cat("Variável:", names(unique_values)[i], "\n")
   cat("Unique Values:", unique_values[[i]], "\n\n")
@@ -67,25 +69,26 @@ for (i in seq_along(unique_values)) {
 # - Isto não é obrigatório. O fato de aplicar este tipo de engenharia de atributos neste dataset não significa que devemos aplicar me outro
 
 
-## Aplicando Engenharia de Atributos em Variáveis Numéricas
+
+#### Aplicando Engenharia de Atributos
 
 # Carregando funções
 source("src/ClassTools.R")
 
-# Forma 1 (Intervalar)
-# Criando 3 novas variáveis que foram transformadas de variáveis numéricas para variáveis categóricas com as funções de ClassTools.R 
+
+## Criando 3 novas variáveis que serão transformadas de variáveis numéricas para variáveis categórias utilizando duas formas
+
+# Forma 1 (Intervalar - Usando Função do script ClassTools )
 toFactors <- c("Duration", "CreditAmount", "Age")
 maxVals <- c(100, 1000000, 100)
 facNames <- unlist(lapply(toFactors, function(x) paste(x, "_f", sep = "")))
 df[, facNames] <- Map(function(x, y) quantize.num(df[, x], maxval = y), toFactors, maxVals)
 
-Head(df)
+head(df)
 str(df)
 summary(df)
 
-
-# Forma 2 (Discreta)
-# Criando 3 novas variáveis que foram transformadas de variáveis numéricas para variáveis categóricas aqui
+# Forma 2 (Discreta - Usando Função criada neste Script)
 criar_categorias <- function(variavel, num_categorias) {
   # Criar breakpoints para dividir a variável em categorias
   breakpoints <- quantile(variavel, probs = seq(0, 1, length.out = num_categorias + 1))
@@ -100,7 +103,7 @@ df$Duration_Categoria <- criar_categorias(df$Duration, num_categorias)
 df$CreditAmount_Categoria <- criar_categorias(df$CreditAmount, num_categorias)
 df$Age_Categoria <- criar_categorias(df$Age, num_categorias)
 
-Head(df)
+head(df)
 str(df)
 summary(df)
 
@@ -116,11 +119,44 @@ summary(df)
 # - Vamos manter ambas as variáveis da forma 1 e forma 2 no nosso dataset
 
 
+## Balanceamento no Dataset
+
+# - Quando olhamos para a nossa variável alvo CreditStatus, podemos constatar que existem muito mais valores 1 (yes) do que 2 (no),
+#   ou seja, nosso dataset possui muito mais BONS pagadores do que MAUS pagadores
+
+# - E este desbalanceamento da variável alvo é um problema, pois se apresentarmos os dados desta forma ao Modelo Preditivo, ele irá
+#   "aprender" muito mais sobre o que é um bom pagador o que o mau pagador, tornando assim nosso modelo tendencioso.
+
+# - E agora como resolver este problema? Iremos aplicar a técnica de balanceamento de dados chamada SMOTE
+
+##  Aplicando Balanceamento
+
+# Forma 1 (Utilizando função de ClassTools - duplicando linhas)
+df_balanceado1 <- df
+df_balanceado1 <- df_balanceado1[, !(names(df_balanceado1) %in% c("Duration", "CreditAmount", "Age", 
+                                                                  "Duration_Categoria", "CreditAmount_Categoria", "Age_Categoria"))]
+df_balanceado1 <- equ.Frame(df_balanceado1, 2)
+
+# Forma 2 (Utilizando pacote ROSE - removendo linhas)
+df_balanceado2 <- df
+df_balanceado2 <- df_balanceado2[, !(names(df_balanceado2) %in% c("Duration", "CreditAmount", "Age", 
+                                                                  "Duration_Categoria", "CreditAmount_Categoria", "Age_Categoria"))]
+df_balanceado2 <- ROSE(CreditStatus ~ .,  data = df_balanceado2, seed = 123, N = 2 * table(df_balanceado2$CreditStatus)[[2]])
+df_balanceado2 <- df_balanceado2$data
+
+
+df <- df_balanceado1
+df2 <- df_balanceado2
+
+summary(df)
+summary(df2)
+
+# - Na Forma 1, você duplicou linhas do grupo minoritário para equilibrar as classes, mantendo todas as observações originais do grupo
+#   majoritário. Isso pode ser útil quando você deseja simplesmente aumentar o número de observações da classe minoritária.
+# - Na Forma 2, você utilizou a técnica SMOTE do pacote ROSE para gerar novas observações sintéticas da classe minoritária, e em seguida,
+#   você removeu as observações da classe majoritária que não foram utilizadas no processo de geração sintética. 
+#   Isso resulta em um conjunto de dados menor, mas balanceado.
 
 
 
-
-
-# Balancear o número de casos positivos e negativos
-df <- equ.Frame(df, 2)
 

@@ -16,7 +16,6 @@ getwd()
 ## Carregando dataset
 
 # - Procurar e arrastar o módulo "German Credit Card UCI dataset"
-
 # - Procurar e arrastar o módulo "ClassTools.zip"
 
 
@@ -100,6 +99,37 @@ Credit$Age_Categoria <- criar_categorias(Credit$Age, num_categorias)
 # Output 
 if(Azure) maml.mapOutputPort('Credit')
 
+
+## Dividir Dados em Treino e Teste
+
+# - Procurar e arrastar o módulo "Split Data"
+# - Conectar o último módulo "Execute R Script" em "Split Data"
+# - Configurar o módulo "Split Data" com Fraction de 0.7 e Random seed 7849
+
+
+## Aplica Técnica de Balanceamento dos Dados
+
+# - Quando olhamos para a nossa variável alvo CreditStatus, podemos constatar que existem muito mais valores 1 (yes) do que 2 (no),
+#   ou seja, nosso dataset possui muito mais BONS pagadores do que MAUS pagadores
+
+# - E este desbalanceamento da variável alvo é um problema, pois se apresentarmos os dados desta forma ao Modelo Preditivo, ele irá
+#   "aprender" muito mais sobre o que é um bom pagador o que o mau pagador, tornando assim nosso modelo tendencioso.
+
+# - E agora como resolver este problema? Iremos aplicar a técnica de balanceamento de dados chamada SMOTE
+
+# - Procurar e arrastar o módulo "Select Column in Dataset"
+# - Conectar o módulo "Split Data" em "Select Column in Dataset"
+# - Configurar o módulo "Select Column in Dataset" para remover as colunas Duration, CreditAmount e Age pois as mesmas foram criadas  
+#   de forma categóricas. Não podemos deixas as colunas com as "mesmas" informações pois deixaria o modelo tendencioso
+
+# - Procurar e arrastar o módulo "Edit Metadata"
+# - Conectar o módulo "Select Column in Dataset" em "Edit Metadata"
+# - Configurar o módulo "Edit Metadata" selecionando nosso variável alvo CreditStatus
+
+# - Procurar e arrastar o módulo "SMOTE"
+# - Conectar o módulo "Edit Metadata" em "SMOTE"
+# - Configurar o módulo "SMOTE" selecionando nosso variável alvo CreditStatus
+#   Configurar SMOTE percentage em 100, adicionar o valor 2 em Numbers e 123456 em Random seed
 
 
 
