@@ -196,8 +196,10 @@ print(plots_CreditStatus)
 
 #### Seleção de Variáveis (Feature Selection)
 
+#  -> Vamos criar um Modelo de Regressão utilizando o algoritmo RandomForest para nos auxiliar na Seleção de Variáveis
+
 ## Criando Modelo (Utilizando RandomForest - pode ser aplicada tanto em Regressão como Classificação)
-# - para este tipo de problema (técnica de feature selecion o atributo "importante = TRUE" precsa estar)
+#  Para este tipo de problema (técnica de feature selecion o atributo "importante = TRUE" precsa estar)
 
 modelo <- randomForest(CreditStatus ~ .
                        - Duration
@@ -239,6 +241,6 @@ ggplot(df_importancia, aes(x = reorder(Variavel, -Importancia), y = Importancia)
 #  -> Até aqui criamos um Modelo para fazer a melhor escolha das variáveis que irão ser usadas na criação da próxima versão do Modelo
 
 
-#
+#### Criação do Modelo
 
 

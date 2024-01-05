@@ -118,7 +118,7 @@ if(Azure) maml.mapOutputPort('Credit')
 # - E agora como resolver este problema? Iremos aplicar a técnica de balanceamento de dados chamada SMOTE
 
 # - Procurar e arrastar o módulo "Select Column in Dataset"
-# - Conectar o módulo "Split Data" em "Select Column in Dataset"
+# - Conectar a primeira porta de saída do módulo "Split Data" em "Select Column in Dataset"
 # - Configurar o módulo "Select Column in Dataset" para remover as colunas Duration, CreditAmount e Age pois as mesmas foram criadas  
 #   de forma categóricas. Não podemos deixas as colunas com as "mesmas" informações pois deixaria o modelo tendencioso
 
@@ -172,5 +172,70 @@ if(Azure) maml.mapOutputPort('Credit')
 
 
 
+## Criação dos Modelos
 
+#  -> Iremos criar 4 modelos diferentes e compara-los
+#  -> Serão 3 modelos criados no Ambiente Azure ML e 1 modelo criado aqui
+
+# - Copiar os módulos de "Select Column in Dataset", "Edit Metadata" e "SMOTE" já existentes e colar para serem usados na criação
+#   dos modelos
+
+# - Configurar o módulo "Select Column in Dataset" para deixar as variáveis escolhidas
+# - Configurar o módulo "Edit Metadata" selecionando a variável alvo CreditStatus e em Fields selecionar Label
+# - Configurar o módulo "SMOTE" com a mesma configuração do anterior
+
+# - Conectar a primeira porta de saída do Módulo "Split Data" no novo módulo "Select Column in Dataset"
+# - Conectar o novo módulo "Select Column in Dataset" no novo módulo "Edit Metadata"
+# - Conectar o novo módulo "Edit Metadata" no novo módulo "SMOTE" 
+
+# Modelo 1
+
+# - Procurar e arrastar o módulo "Two-Class Bayes Point Machine"
+# - Procurar e arrastar o módulo "Train Model"
+# - Procurar e arrastar o módulo "Score Model"
+
+# - Configurar o módulo "Two-Class Bayes Point Machine" colocando 100 em Number of training iterations
+
+# - Conectar o módulo "Two-Class Bayes Point Machine" na primeira porta do módulo "Train Model"
+# - Conectar o módulo "SMOTE" na segunda porta do módulo "Train Model"
+# - Conectar o módulo "Train Model" na primeira porta de "Score Model"
+# - Conectar a segunda porta de "Split Data" na segunda porta de "Score Model"
+
+# Modelo 2
+
+# - Procurar e arrastar o módulo "Two-Class Neural Network"
+# - Procurar e arrastar o módulo "Train Model"
+# - Procurar e arrastar o módulo "Score Model"
+
+# - Conectar o módulo "Two-Class Neural Network" na primeira porta do módulo "Train Model"
+# - Conectar o módulo "SMOTE" na segunda porta do módulo "Train Model"
+# - Conectar o módulo "Train Model" na primeira porta de "Score Model"
+# - Conectar a segunda porta de "Split Data" na segunda porta de "Score Model"
+
+# Modelo 3
+
+# - Procurar e arrastar o módulo "Two-Class Support Vector"
+# - Procurar e arrastar o módulo "Train Model"
+# - Procurar e arrastar o módulo "Score Model"
+
+# - Conectar o módulo "Two-Class Support Vector" na primeira porta do módulo "Train Model"
+# - Conectar o módulo "SMOTE" na segunda porta do módulo "Train Model"
+# - Conectar o módulo "Train Model" na primeira porta de "Score Model"
+# - Conectar a segunda porta de "Split Data" na segunda porta de "Score Model"
+
+
+# Comparando os Modelos
+
+# - Procurar e arrastar dois módulos "Evaluete Model"
+
+# - Conectar o módulo "Score Model" do Modelo 1 na primera porta do primeiro "Evaluete Model"
+# - Conectar o módulo "Score Model" do Modelo 2 na segunda porta do primeiro "Evaluete Model"
+
+# - Conectar o módulo "Score Model" do Modelo 2 na primera porta do segundo "Evaluete Model"
+# - Conectar o módulo "Score Model" do Modelo 3 na segunda porta do segundo "Evaluete Model"
+
+# - Ao clicar em Visualize no módulo "Evaluete Model" ficar atento ao gráfico:
+#   A linha azul é do primeiro modelo da primeira porta e a vermelha do segundo modelo na segunda porta
+#   A linha que estiver mais próximo da esquerda é o melhor modelo
+#   Ao clicar na legenda Azul ou Vermelha vemos as métricas como Accurary e Precision abaixo 
 
