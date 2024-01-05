@@ -132,5 +132,45 @@ if(Azure) maml.mapOutputPort('Credit')
 #   Configurar SMOTE percentage em 100, adicionar o valor 2 em Numbers e 123456 em Random seed
 
 
+
 ## Seleção de Variáveis (Feature Selection)
+
+# Método 1
+
+# - Procurar e arrastar o módulo "Filter Based Feature Selection"
+# - Conectar o módulo "SMOTE" em "Filter Based Feature Selection"
+
+# - Configurar "Filter Based Feature Selection":
+#   Escolher o método Mutual (pois é um problema de classificação)
+#   Escolher a variável alvo (target)
+#   Escolher o número de variáveis mais relevantes a serem destacadas (escolher 8 e aparecerão as oito mais relevantes)
+
+# Método 2
+
+#  -> Para utilizar este método precisaremos treinar um modelo de classificação antes
+
+# - Procurar e arrastar o módulo "Two-Class Decision Forest" (este é o módulo com o algoritmo de classificação escolhido)
+# - Procurar e arrastar o módulo "Train Model"
+# - Conectar o módulo "Two-Class Decision Forest" na primeira porta de entrada do módulo "Train Model"
+# - Conectar o módulo "SMOTE" na segunda porta de entrada do módulo "Train Model"
+
+# - No módulo "Train Model" escolher a variável alvo/target/preditora (CreditStatus)
+
+#  -> Até aqui criamos um Modelo para fazer a melhor escolha das variáveis que irão ser usadas na criação da próxima versão do Modelo
+
+# - Procurar e arrastar o módulo "Permutation Feature Import" (este módulo também pode usar em Regressão)
+
+# - Conectar o módulo "Train Model" na primeira porta de entrada do módulo "Permutation Feature Import"
+# - Conectar a segunda saída do módulo Split Data na segunda porta de entrada do módulo "Permutation Feature Import"
+
+# - No módulo "Permutation Feature Import" configurar a métrica a ser usada para Classification - Accuracy
+
+# - Visualizar o resultado no módulo "Permutation Feature Import"
+
+
+#  -> Para o nosso experimento foi escolhido o método utilizando lingugem R para seleção das variáveis do modelo
+
+
+
+
 

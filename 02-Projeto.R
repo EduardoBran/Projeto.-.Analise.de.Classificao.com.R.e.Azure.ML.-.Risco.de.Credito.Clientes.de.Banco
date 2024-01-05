@@ -212,12 +212,20 @@ modelo <- randomForest(CreditStatus ~
                        data = df, 
                        ntree = 100, nodesize = 10, importance = T)
 
+# Visualizando por números
+print(modelo$importance)
+
 # Visualizando Modelo Por Gráficos
 
-varImpPlot(modelo)                                                                        # forma 1 (quanto mais a direita melhor)
-barplot(modelo$importance[, 1], main = "Importância das Variáveis", col = "skyblue")      # forma 2
+# forma 1 (quanto mais a direita melhor)
+varImpPlot(modelo)
 
-importancia_ordenada <- modelo$importance[order(-modelo$importance[, 1]), , drop = FALSE] # forma 3 (profissional)
+# forma 2 (quando tem poucas variáveis)
+barplot(modelo$importance[, 1], main = "Importância das Variáveis", col = "skyblue")      
+
+# forma 3 (usando ggplot, método mais profissional)
+importancia_ordenada <- modelo$importance[order(-modelo$importance[, 1]), , drop = FALSE] 
+
 df_importancia <- data.frame(
   Variavel = rownames(importancia_ordenada),
   Importancia = importancia_ordenada[, 1]
@@ -227,5 +235,10 @@ ggplot(df_importancia, aes(x = reorder(Variavel, -Importancia), y = Importancia)
   labs(title = "Importância das Variáveis", x = "Variável", y = "Importância") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10))
 
+
+#  -> Até aqui criamos um Modelo para fazer a melhor escolha das variáveis que irão ser usadas na criação da próxima versão do Modelo
+
+
+#
 
 
