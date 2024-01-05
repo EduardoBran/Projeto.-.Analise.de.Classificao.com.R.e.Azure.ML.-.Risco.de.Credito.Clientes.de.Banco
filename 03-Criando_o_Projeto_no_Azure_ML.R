@@ -132,5 +132,5 @@ if(Azure) maml.mapOutputPort('Credit')
 #   Configurar SMOTE percentage em 100, adicionar o valor 2 em Numbers e 123456 em Random seed
 
 
-
+## Seleção de Variáveis (Feature Selection)
 

@@ -8,12 +8,13 @@ getwd()
 library(dplyr)
 library(ggplot2)
 library(ROSE)
+library(randomForest)
 
 
 
-## Carregando os dados
+#### Carregando e Convertendo os Dados
 
-# Carrega o dataset antes da transformacao (baixado do Azure ML)
+## Carrega o dataset antes da transformacao (baixado do Azure ML)
 df <- read.csv("German_Credit_Card_UCI_-_dataset.csv")
 head(df)
 dim(df)
@@ -35,7 +36,6 @@ colunas_chr <- sapply(df, is.character)
 df <- mutate_if(df, colunas_chr, as.factor)
 df$X1.1 <- as.factor(df$X1.1)
 str(df)
-
 
 
 ## Alterando o nome das variáveis (pesquisado na fonte)
@@ -74,7 +74,6 @@ for (i in seq_along(unique_values)) {
 
 # Carregando funções
 source("src/ClassTools.R")
-
 
 ## Criando 3 novas variáveis que serão transformadas de variáveis numéricas para variáveis categórias utilizando duas formas
 
@@ -129,12 +128,11 @@ summary(df)
 
 # - E agora como resolver este problema? Iremos aplicar a técnica de balanceamento de dados chamada SMOTE
 
+
 ##  Aplicando Balanceamento
 
 # Forma 1 (Utilizando função de ClassTools - duplicando linhas)
 df_balanceado1 <- df
-df_balanceado1 <- df_balanceado1[, !(names(df_balanceado1) %in% c("Duration", "CreditAmount", "Age", 
-                                                                  "Duration_Categoria", "CreditAmount_Categoria", "Age_Categoria"))]
 df_balanceado1 <- equ.Frame(df_balanceado1, 2)
 
 # Forma 2 (Utilizando pacote ROSE - removendo linhas)
@@ -143,7 +141,6 @@ df_balanceado2 <- df_balanceado2[, !(names(df_balanceado2) %in% c("Duration", "C
                                                                   "Duration_Categoria", "CreditAmount_Categoria", "Age_Categoria"))]
 df_balanceado2 <- ROSE(CreditStatus ~ .,  data = df_balanceado2, seed = 123, N = 2 * table(df_balanceado2$CreditStatus)[[2]])
 df_balanceado2 <- df_balanceado2$data
-
 
 df <- df_balanceado1
 df2 <- df_balanceado2
@@ -193,12 +190,42 @@ plots_CreditStatus <- lapply(colNames2, function(x) {
     NULL
   }
 })
-
-# Exibindo os gráficos
 print(plots_CreditStatus)
 
 
 
+#### Seleção de Variáveis (Feature Selection)
+
+## Criando Modelo (Utilizando RandomForest - pode ser aplicada tanto em Regressão como Classificação)
+# - para este tipo de problema (técnica de feature selecion o atributo "importante = TRUE" precsa estar)
+
+modelo <- randomForest(CreditStatus ~ .
+                       - Duration
+                       - Age
+                       - CreditAmount, 
+                       data = df, 
+                       ntree = 100, nodesize = 10, importance = T)
+
+modelo <- randomForest(CreditStatus ~
+                         CheckingAcctStat + Duration_f + CreditHistory + SavingsBonds + 
+                         CreditAmount_f + Property + Employment + Purpose,
+                       data = df, 
+                       ntree = 100, nodesize = 10, importance = T)
+
+# Visualizando Modelo Por Gráficos
+
+varImpPlot(modelo)                                                                        # forma 1 (quanto mais a direita melhor)
+barplot(modelo$importance[, 1], main = "Importância das Variáveis", col = "skyblue")      # forma 2
+
+importancia_ordenada <- modelo$importance[order(-modelo$importance[, 1]), , drop = FALSE] # forma 3 (profissional)
+df_importancia <- data.frame(
+  Variavel = rownames(importancia_ordenada),
+  Importancia = importancia_ordenada[, 1]
+)
+ggplot(df_importancia, aes(x = reorder(Variavel, -Importancia), y = Importancia)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Importância das Variáveis", x = "Variável", y = "Importância") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10))
 
 
 
