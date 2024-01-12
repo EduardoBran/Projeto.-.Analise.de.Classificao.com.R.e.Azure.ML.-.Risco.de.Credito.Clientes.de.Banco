@@ -168,7 +168,7 @@ if(Azure) maml.mapOutputPort('Credit')
 # - Visualizar o resultado no módulo "Permutation Feature Import"
 
 
-#  -> Para o nosso experimento foi escolhido o método utilizando lingugem R para seleção das variáveis do modelo
+#  -> Para o nosso experimento foi escolhido o método utilizando linguagem R para seleção das variáveis do modelo
 
 
 

@@ -243,4 +243,67 @@ ggplot(df_importancia, aes(x = reorder(Variavel, -Importancia), y = Importancia)
 
 #### Criação do Modelo
 
+# - Iremos criar 4 modelos diferentes e compara-los
+# - Serão 3 modelos criados no Ambiente Azure ML e 1 modelo criado aqui utilizando a Linguagem R
+
+# Cross Tabulation     (vendo a quantidade de valores "1" e valores "2")
+table(df$CreditStatus)
+
+
+## Criando dados de treino e teste
+
+# Funcao para gerar dados de treino e dados de teste (50% para treino e 50% para teste por conta de ser modelo de classificação)
+splitData <- function(dataframe, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+  index <- 1:nrow(dataframe)
+  trainindex <- sample(index, trunc(length(index)/2))
+  trainset <- dataframe[trainindex, ]
+  testset <- dataframe[-trainindex, ]
+  list(trainset = trainset, testset = testset)
+}
+
+# Gerando dados de treino e de teste
+splits <- splitData(df, seed = 808)
+
+# Separando os dados
+dados_treino <- splits$trainset
+dados_teste <- splits$testset
+
+# Verificando o numero de linhas
+nrow(dados_treino)
+nrow(dados_teste)
+
+
+## Criando um modelo de classificação baseado em randomForest,
+
+# Construindo o modelo (desta vez sem o parâmetro importance e com as variáveis mais significantes indicadas no modelo anterior)
+modelo <- randomForest( CreditStatus ~ CheckingAcctStat
+                        + Duration_f
+                        + Purpose
+                        + CreditHistory
+                        + SavingsBonds
+                        + Employment
+                        + CreditAmount_f, 
+                        data = dados_treino, 
+                        ntree = 100, 
+                        nodesize = 10)
+
+# Imprimondo o resultado
+print(modelo)
+
+
+## Avaliando a perfomance do modelo
+
+# Gerando previsões nos dados de teste
+previsoes <- data.frame(observado = dados_teste$CreditStatus,
+                        previsto = predict(modelo, newdata = dados_teste))
+
+
+# Visualizando o resultado
+View(previsoes)
+View(dados_teste)
+
+
+
+
 
