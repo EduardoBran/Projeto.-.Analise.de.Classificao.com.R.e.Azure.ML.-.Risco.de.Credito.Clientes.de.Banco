@@ -9,7 +9,8 @@ library(dplyr)
 library(ggplot2)
 library(ROSE)
 library(randomForest)
-
+library(ROCR)  # Gerando uma curva ROC em R
+library(caret) # Cria confusion matrix
 
 
 #### Carregando e Convertendo os Dados
@@ -274,7 +275,7 @@ nrow(dados_treino)
 nrow(dados_teste)
 
 
-## Criando um modelo de classificação baseado em randomForest,
+## Criando um modelo de classificação baseado em randomForest
 
 # Construindo o modelo (desta vez sem o parâmetro importance e com as variáveis mais significantes indicadas no modelo anterior)
 modelo <- randomForest( CreditStatus ~ CheckingAcctStat
@@ -292,16 +293,72 @@ modelo <- randomForest( CreditStatus ~ CheckingAcctStat
 print(modelo)
 
 
-## Avaliando a perfomance do modelo
+#### Avaliando a perfomance do modelo
+
+## utilizando score (performance)
 
 # Gerando previsões nos dados de teste
 previsoes <- data.frame(observado = dados_teste$CreditStatus,
                         previsto = predict(modelo, newdata = dados_teste))
 
-
 # Visualizando o resultado
 View(previsoes)
-View(dados_teste)
+
+
+## Confusion Matrix (criando manualmente)
+
+# Formulas
+Accuracy <- function(x){
+  (x[1,1] + x[2,2]) / (x[1,1] + x[1,2] + x[2,1] + x[2,2])
+}
+Recall <- function(x){  
+  x[1,1] / (x[1,1] + x[1,2])
+}
+Precision <- function(x){
+  x[1,1] / (x[1,1] + x[2,1])
+}
+W_Accuracy  <- function(x){
+  (x[1,1] + x[2,2]) / (x[1,1] + 5 * x[1,2] + x[2,1] + x[2,2])
+}
+F1 <- function(x){
+  2 * x[1,1] / (2 * x[1,1] + x[1,2] + x[2,1])
+}
+
+# Criando a confusion matrix.
+confMat <- matrix(unlist(Map(function(x, y){sum(ifelse(previsoes[, 1] == x & previsoes[, 2] == y, 1, 0) )},
+                             c(2, 1, 2, 1), c(2, 2, 1, 1))), nrow = 2)
+
+# Criando um dataframe com as estatisticas dos testes
+df_mat <- data.frame(Category = c("Credito Ruim", "Credito Bom"),
+                     Classificado_como_ruim = c(confMat[1,1], confMat[2,1]),
+                     Classificado_como_bom = c(confMat[1,2], confMat[2,2]),
+                     Accuracy_Recall = c(Accuracy(confMat), Recall(confMat)),
+                     Precision_WAcc = c(Precision(confMat), W_Accuracy(confMat)))
+print(df_mat)
+
+
+## Confusion Matrix (utilizando pacote Caret)
+confusionMatrix(previsoes$observado, previsoes$previsto)
+
+
+## Gerando Curva ROC
+
+# Gerando as classes de dados
+class1 <- predict(modelo, newdata = dados_teste, type = 'prob')
+class2 <- dados_teste$CreditStatus
+
+# Criando curva
+pred <- prediction(class1[,2], class2)
+perf <- performance(pred, "tpr","fpr") 
+plot(perf, col = rainbow(10))
+
+
+
+
+
+
+
+
 
 
 
