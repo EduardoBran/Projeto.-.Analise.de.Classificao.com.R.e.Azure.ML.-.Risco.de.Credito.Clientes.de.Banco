@@ -11,6 +11,7 @@ library(ROSE)
 library(randomForest)
 library(ROCR)  # Gerando uma curva ROC em R
 library(caret) # Cria confusion matrix
+library(C50)   # Otimização do Modelo (este pacote permite que você dê peso aos erros, construindo assim um resultado ponderado)
 
 
 #### Carregando e Convertendo os Dados
@@ -242,6 +243,7 @@ ggplot(df_importancia, aes(x = reorder(Variavel, -Importancia), y = Importancia)
 #  -> Até aqui criamos um Modelo para fazer a melhor escolha das variáveis que irão ser usadas na criação da próxima versão do Modelo
 
 
+
 #### Criação do Modelo
 
 # - Iremos criar 4 modelos diferentes e compara-los
@@ -293,6 +295,7 @@ modelo <- randomForest( CreditStatus ~ CheckingAcctStat
 print(modelo)
 
 
+
 #### Avaliando a perfomance do modelo
 
 ## utilizando score (performance)
@@ -338,7 +341,7 @@ print(df_mat)
 
 
 ## Confusion Matrix (utilizando pacote Caret)
-confusionMatrix(previsoes$observado, previsoes$previsto)
+confusionMatrix(previsoes$observado, previsoes$previsto)  # Accuracy : 0.7662 
 
 
 ## Gerando Curva ROC
@@ -354,13 +357,57 @@ plot(perf, col = rainbow(10))
 
 
 
+#### Otimização do Modelo
+
+# - Iremas usar uma técnica de otimização usando um conceito de Modelo randomForest ponderado
+# - Atraveś do pacote c50 ao recriar o modelo iremos penalizar os erros do modelo.
+
+
+## Criando uma Cost Function (matriz de peso)
+Cost_func <- matrix(c(0, 1.5, 1, 0), nrow = 2, dimnames = list(c("1", "2"), c("1", "2")))
+
+
+## Recriando o Modelo
+modelo_v2  <- C5.0(CreditStatus ~ CheckingAcctStat
+                   + Purpose
+                   + CreditHistory
+                   + SavingsBonds
+                   + Employment,
+                   data = dados_treino,  
+                   trials = 100,
+                   cost = Cost_func)
+
+print(modelo_v2)
 
 
 
+#### Avaliando a perfomance do modelo_v2
+
+## utilizando score (performance)
+
+# Gerando previsões nos dados de teste
+previsoes_v2 <- data.frame(observado = dados_teste$CreditStatus,
+                           previsto = predict(modelo_v2, newdata = dados_teste))
+
+# Visualizando o resultado
+View(previsoes_v2)
 
 
+## Criando a confusion matrix (manualmente, utilizando as formulas acima)
+confMat_v2 <- matrix(unlist(Map(function(x, y){sum(ifelse(previsoes_v2[, 1] == x & previsoes_v2[, 2] == y, 1, 0) )},
+                                c(2, 1, 2, 1), c(2, 2, 1, 1))), nrow = 2)
+
+# Criando um dataframe com as estatisticas dos testes
+df_mat_v2 <- data.frame(Category = c("Credito Ruim", "Credito Bom"),
+                        Classificado_como_ruim = c(confMat_v2[1,1], confMat_v2[2,1]),
+                        Classificado_como_bom = c(confMat_v2[1,2], confMat_v2[2,2]),
+                        Accuracy_Recall = c(Accuracy(confMat_v2), Recall(confMat_v2)),
+                        Precision_WAcc = c(Precision(confMat_v2), W_Accuracy(confMat_v2)))
+print(df_mat_v2)
 
 
+## Confusion Matrix (utilizando pacote Caret)
+confusionMatrix(previsoes_v2$observado, previsoes_v2$previsto)  #  Accuracy : 0.6938  
 
 
 
