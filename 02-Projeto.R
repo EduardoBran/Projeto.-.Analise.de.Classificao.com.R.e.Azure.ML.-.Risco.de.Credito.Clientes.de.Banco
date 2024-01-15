@@ -410,4 +410,20 @@ print(df_mat_v2)
 confusionMatrix(previsoes_v2$observado, previsoes_v2$previsto)  #  Accuracy : 0.6938  
 
 
+## Recomendações Sobre Otimização
+
+# Dicas Geras
+
+#  -> Utilizar diferentes conjuntos de variáveis
+#  -> Utilizar outros algoritmos
+#  -> Aplicar quantization a variáveis numéricas (transforma-las em variáveis categóricas)
+#  -> Otimizar os parâmetros dos algoritmos
+
+
+# Dicas de Negócio
+
+#  -> Quais features (variáveis) são mais relevantes ?
+#  -> Trade-off entre falsos positivos e falsos negativos
+#  -> O problema pode ser resolvido com esses dados?
+
 
