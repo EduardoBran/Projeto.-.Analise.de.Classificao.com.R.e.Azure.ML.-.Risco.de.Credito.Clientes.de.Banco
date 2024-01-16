@@ -239,3 +239,21 @@ if(Azure) maml.mapOutputPort('Credit')
 #   A linha que estiver mais próximo da esquerda é o melhor modelo
 #   Ao clicar na legenda Azul ou Vermelha vemos as métricas como Accurary e Precision abaixo 
 
+
+
+
+## Publicação do Modelo como um serviço WEB utilizando a plataforma Azure Machine Learning
+
+# - Antes iremos remover os módulos que fazem algumas análises exploratórias e deixar somente os módulos necessários.
+
+
+# - Feito as escolhas do módulo, clicar no menu inferior em "Set Up Web Service", escolher "Predictive Web Service"
+#   (a opção "Retraining Web Service" é para um modelo que já esteja em produção)
+
+# - Após clicar em "Predictive Web Service" o Azure ML automaticamente remove e insere módulos necessários
+#   E ao observar na parte superior teremos duas abas, com o modelo original de treino e o modelo a ser colocado em produção.
+
+# - Executar o serviço clicando em "Run"
+# - Clicar em "Deploy Web Service"
+
+# - Podemos agora testar diretamente no Azure ML ou utilizar a chamada para API disponibilizada

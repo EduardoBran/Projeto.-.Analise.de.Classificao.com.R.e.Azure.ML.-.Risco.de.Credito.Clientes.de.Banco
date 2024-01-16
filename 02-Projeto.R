@@ -427,3 +427,11 @@ confusionMatrix(previsoes_v2$observado, previsoes_v2$previsto)  #  Accuracy : 0.
 #  -> O problema pode ser resolvido com esses dados?
 
 
+# Salvando dataframe usado no modelo
+write.csv(df, file = "dados.csv", row.names = FALSE)
+
+# Salvar o modelo treinado
+saveRDS(modelo, "~/Desktop/DataScience/CienciaDeDados/1.Big-Data-Analytics-com-R-e-Microsoft-Azure-Machine-Learning/15.Projeto-de-Classificação-com-R-e-Azure-ML_-_Risco_de_Credito_Clientes_Banco/modelo.rds")
+
+
+
